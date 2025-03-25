@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template
+from flask import Flask, render_template, request
 
 
 def create_app(test_config=None):
@@ -21,11 +21,23 @@ def create_app(test_config=None):
         pass
 
 
+    #Web Pages go below.
 
 
     @app.route("/")
     def index():
         return render_template("index.html")
+
+    @app.route("/check_login", methods = ("POST",))
+    def check_login():
+
+        try:
+            e = e
+
+        except:
+            return "404, can not reach database :C"
+        
+        return request.form
 
     return app
 
