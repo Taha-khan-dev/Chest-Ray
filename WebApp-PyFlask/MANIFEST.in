@@ -1,3 +1,5 @@
-graft palindrome_detector/static
-graft palindrome_detector/templates
+graft Chest_Ray/static
+graft Chest_Ray/templates
+
+
 global-exclude *.pyc
