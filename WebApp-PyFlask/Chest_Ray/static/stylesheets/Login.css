@@ -1,0 +1,52 @@
+body {
+    font-family: Arial, sans-serif;
+    background-image: url('../images/DOWN2.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    color: black;
+    text-align: center;
+    margin: 0;
+    padding: 30px;
+}
+
+.container {
+    margin-top: 50px;
+    padding: 15px;
+}
+
+.logo {
+    width: 150px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+}
+
+button {
+    background-color: black;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+button:hover {
+    background-color: #666;
+    transition: 0.2s;
+}
+
+.hidden {
+    display: none;
+}
+
+input {
+    margin: 8px;
+    padding: 5px;
+}
+
+.show-pass-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+    margin-left: 5px;
+}
