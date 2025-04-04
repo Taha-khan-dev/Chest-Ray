@@ -1,9 +1,6 @@
 body {
-    font-family: Arial, sans-serif;
-    background-image: url('../images/DOWN2.jpg');
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
+    font-family: 'Fibra One';
+    background-color: #E5D8C8;
     color: black;
     text-align: center;
     margin: 0;
@@ -13,6 +10,9 @@ body {
 .container {
     margin-top: 50px;
     padding: 15px;
+    background-color: #D9C8B2;
+    border-radius: 8px;
+    display: inline-block;
 }
 
 .logo {
@@ -46,7 +46,7 @@ input {
 }
 
 .show-pass-btn {
-    padding: 5px 10px;
+    padding: 7.5px 12.5px;
     font-size: 12px;
     margin-left: 5px;
 }

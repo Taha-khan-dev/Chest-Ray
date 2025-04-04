@@ -22,7 +22,15 @@ def create_app(test_config=None):
         pass
 
 
+
+
+
+
+
     #Web Pages go below.
+
+
+
 
     app.secret_key = "keyy"
 
@@ -43,14 +51,16 @@ def create_app(test_config=None):
             username = request.form.get("username")
             password = request.form.get("password")
 
-            cur.execute("SELECT * FROM users WHERE username = ? AND password = ?;", (username, password))
+            cur.execute("SELECT * FROM users WHERE user_name = ? AND password = ?;", (username, password))
             user = cur.fetchone()
 
+            connection.close()
+
             if user:
-                session["user"] = user["username"]
+                session["user"] = user["user_name"]
+                session["user"] = user["user_role"]
                 
-                
-                return render_template("layout.html")
+                return render_template("index.html")
             
             else:
                 return request.form
@@ -58,6 +68,11 @@ def create_app(test_config=None):
         except:
             return "404, can not reach database :C"
         
+
+
+
+
+
 
 
     @app.route("/dashboard")

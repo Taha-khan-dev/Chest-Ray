@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ChestRay G6</title>
     <link rel="stylesheet" href="../static/stylesheets/Layout.css">
-
-    <title>Login - ChestRay G6</title>  
+    
 </head>
+
 <body>
     <div class="container" id="userTypePage">
         <img src="../static/images/G6LOGOAB23.png" alt="ChestRay Logo" class="logo">
@@ -18,20 +19,20 @@
 
     <div class="hidden" id="loginPage">
         <h2>Login</h2>
-        <form id="loginForm" action="/check_login" method = "POST">
+        <form id="loginForm" action = "/check_login" method="POST">
             <div id="adminFields" class="hidden">
-                <label for="adminUsername">Username:</label>
-                <input type="text" id="adminUsername" name="adminUsername"><br>
-                <label for="adminPassword">Password:</label>
-                <input type="password" id="adminPassword" name="adminPassword">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username"><br>
+                <label for="username">Password:</label>
+                <input type="password" id="password" name="password">
                 <button type="button" onclick="showHidePass('adminPassword')" class="show-pass-btn">Show</button><br>
             </div>
             
             <div id="patientFields" class="hidden">
-                <label for="patientUsername">Username/UserID:</label>
-                <input type="text" id="patientUsername" name="patientUsername"><br>
-                <label for="patientPassword">Password:</label>
-                <input type="password" id="patientPassword" name="patientPassword">
+                <label for="username">Username/UserID:</label>
+                <input type="text" id="username" name="patientUsername"><br>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="patientPassword">
                 <button type="button" onclick="showHidePass('patientPassword')" class="show-pass-btn">Show</button><br>
             </div>
             <button type="submit">Login</button>
@@ -57,11 +58,11 @@
             }
         }
 
-        function signupRedirect() {
-            alert("Sign-Up page coming soon!");
+        function signupPAGERedirection() {
+            alert("Sign-Up page on the way!");
         }
 
-        function showHidePass(inputId) {
+        function showHidePassword(inputId) {
             let input = document.getElementById(inputId);
             let btn = input.nextElementSibling;
 
@@ -89,7 +90,8 @@
                 goToLogin(savedUser);
             }
         }
-
     </script>
 </body>
 </html>
+
+
