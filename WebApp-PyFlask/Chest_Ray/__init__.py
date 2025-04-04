@@ -50,19 +50,37 @@ def create_app(test_config=None):
 
             username = request.form.get("username")
             password = request.form.get("password")
+            usertype = request.form.get("userType")
 
-            cur.execute("SELECT * FROM users WHERE user_name = ? AND password = ?;", (username, password))
+            if usertype == "admin":
+                cur.execute("SELECT * FROM users WHERE user_name = ? AND password = ?;", (username, password))
+            elif usertype == "patient":
+                cur.execute("SELECT * FROM patients WHERE patient_name = ? AND password = ?;", (username, password))
+            else:
+                return "404"
+
             user = cur.fetchone()
 
-            connection.close()
 
-            if user:
+            if user and  usertype == "admin":
                 session["user"] = user["user_name"]
-                session["user"] = user["user_role"]
+                session["user"] = usertype
                 
+                connection.close()
+
                 return render_template("index.html")
             
+            elif user and  usertype == "patient":
+                session["user"] = user["patient_name"]
+                session["user"] = usertype
+
+                connection.close()
+
+                return render_template("index.html")
+
+
             else:
+                connection.close()
                 return request.form
 
         except:

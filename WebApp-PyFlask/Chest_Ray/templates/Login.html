@@ -20,19 +20,22 @@
     <div class="hidden" id="loginPage">
         <h2>Login</h2>
         <form id="loginForm" action = "/check_login" method="POST">
+
+            <input type = "hidden" id ="userType" name = "userType"> <!-- Added by Taha | to check if admin or patient-->
+
             <div id="adminFields" class="hidden">
                 <label for="username">Username:</label>
-                <input type="text" id="username" name="username"><br>
+                <input type="text" id="Adminusername" name="username"><br>
                 <label for="username">Password:</label>
-                <input type="password" id="password" name="password">
+                <input type="password" id="Adminpassword" name="password">
                 <button type="button" onclick="showHidePass('adminPassword')" class="show-pass-btn">Show</button><br>
             </div>
             
             <div id="patientFields" class="hidden">
                 <label for="username">Username/UserID:</label>
-                <input type="text" id="username" name="patientUsername"><br>
+                <input type="text" id="Patientusername" name="username"><br>
                 <label for="password">Password:</label>
-                <input type="password" id="password" name="patientPassword">
+                <input type="password" id="Patientpassword" name="password">
                 <button type="button" onclick="showHidePass('patientPassword')" class="show-pass-btn">Show</button><br>
             </div>
             <button type="submit">Login</button>
@@ -49,6 +52,9 @@
             document.getElementById('loginPage').classList.remove('hidden');
 
             userType = type;
+            document.getElementById('userType').value = type;
+
+
             if (type === 'admin') {
                 document.getElementById('adminFields').classList.remove('hidden');
                 document.getElementById('patientFields').classList.add('hidden');
