@@ -22,14 +22,7 @@ def create_app(test_config=None):
         pass
 
 
-
-
-
-
-
     #Web Pages go below.
-
-
 
 
     app.secret_key = "keyy"
