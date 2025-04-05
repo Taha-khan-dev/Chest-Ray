@@ -1,6 +1,6 @@
 import os
 import sqlite3
-from flask import Flask, render_template, request, session, redirect, url_for
+from flask import Flask, render_template, request, session, redirect
 
 
 def create_app(test_config=None):
@@ -29,8 +29,16 @@ def create_app(test_config=None):
 
     @app.route("/")
     def index():
-        return render_template("login.html")
+        if "user" in session:
+            return redirect("dashboard") 
+        
+        return redirect("login")
     
+    @app.route("/login")
+    def login():
+        return render_template("login.html")
+
+
 
     @app.route("/check_login", methods = ("POST",))
     def check_login():
@@ -60,7 +68,7 @@ def create_app(test_config=None):
                 
                 connection.close()
 
-                return render_template("dashboard.html")
+                return redirect("dashboard")
             
             elif user and usertype == "patient":
                 session["username"] = user["patient_name"]
@@ -68,7 +76,7 @@ def create_app(test_config=None):
 
                 connection.close()
 
-                return render_template("dashboard.html")
+                return redirect("dashboard")
 
 
             else:
@@ -85,8 +93,59 @@ def create_app(test_config=None):
     @app.route("/dashboard")
     def dashboard():
         if "user" in session:
-            return f"Welcome, {session['user']}! You are now logged in."
+            return f"Welcome, {session['username']}! You are now logged in."
         return render_template("Login.html")
+
+
+    @app.route("/createAccPatient")
+    def createAccPatient():
+        return render_template("createAccPatient.html")
+    
+
+    @app.route("/signup")
+    def signup():
+        return render_template("signup.html")
+
+    @app.route("/AccountCreation", methods = ("POST",))
+    def AccountCreation():
+
+        try:
+            connection = sqlite3.connect("CHESTRAYG6.db")
+            connection.row_factory = sqlite3.Row
+            cur = connection.cursor()
+
+            first_name = request.form.get("first_name")
+            last_name = request.form.get("last_name")
+            email = request.form.get("email")
+            tel = request.form.get("tel")
+            password = request.form.get("password")
+            dob = request.form.get("DOB")
+            gender = request.form.get("gender")
+
+            name = first_name + " " + last_name
+
+            #medical_history should be added into account settings
+
+            cur.execute("""
+                insert into patients (
+                        patient_name,
+                        patient_password,
+                        DOB,
+                        gender,
+                        medical_history,
+                        phone_number
+                        ) VALUES (?, ?, ?, ? , ?, ?)
+                """, (name, password, dob, gender, "", tel)
+                        )
+
+            connection.commit()
+            connection.close()
+
+            return redirect("/dashboard")
+
+        except Exception as error:
+            print(f"Error: {error}")
+            return "404, can not reach database :C"
 
 
     return app
