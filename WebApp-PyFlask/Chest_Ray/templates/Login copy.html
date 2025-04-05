@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ChestRay G6</title>
+    <link rel="stylesheet" href="../static/stylesheets/Layout.css">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+</head>
+
+<body>
+
+    <div class="hidden" id="loginPage">
+        <h2>Login</h2>
+        <form id="loginForm" action = "/check_login" method="POST">
+
+            <input type = "hidden" id ="userType" name = "userType"> <!-- Added by Taha | to check if admin or patient-->
+
+            <div id="adminFields" class="hidden">
+                <label for="username">Username:</label>
+                <input type="text" id="Adminusername" name="username"><br>
+                <label for="username">Password:</label>
+                <input type="password" id="Adminpassword" name="password">
+                <button type="button" onclick="showHidePass('AdminPassword')" class="show-pass-btn">Show</button><br>
+            </div>
+
+   
+</body>
+
+
+</html>
+
+

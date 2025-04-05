@@ -19,31 +19,41 @@
 
     <div class="hidden" id="loginPage">
         <h2>Login</h2>
-        <form id="loginForm" action = "/check_login" method="POST">
+        <form id="loginForm" action = "/check_login" method="POST" onsubmit="return validateForm();">
 
             <input type = "hidden" id ="userType" name = "userType"> <!-- Added by Taha | to check if admin or patient-->
+            <input type="hidden" id="username" name="username">
+            <input type="hidden" id="password" name="password">
 
             <div id="adminFields" class="hidden">
-                <label for="username">Username:</label>
-                <input type="text" id="Adminusername" name="username"><br>
-                <label for="username">Password:</label>
-                <input type="password" id="Adminpassword" name="password">
-                <button type="button" onclick="showHidePass('adminPassword')" class="show-pass-btn">Show</button><br>
+                <label for="Adminusername">Username:</label>
+                <input type="text" id="Adminusername">
+                <br>
+                <label for="Adminpassword">Password:</label>
+                <input type="password" id="Adminpassword">
+                <button type="button" onclick="showHidePassword('Adminpassword')" class="show-pass-btn">Show</button><br>
             </div>
             
+
             <div id="patientFields" class="hidden">
-                <label for="username">Username/UserID:</label>
-                <input type="text" id="Patientusername" name="username"><br>
-                <label for="password">Password:</label>
-                <input type="password" id="Patientpassword" name="password">
-                <button type="button" onclick="showHidePass('patientPassword')" class="show-pass-btn">Show</button><br>
+                <label for="Patientusername">Username/UserID:</label>
+                <input type="text" id="Patientusername">
+                <br>
+                <label for="Patientpassword">Password:</label>
+                <input type="password" id="Patientpassword">
+                <button type="button" onclick="showHidePassword('Patientpassword')" class="show-pass-btn">Show</button><br>
             </div>
+
             <button type="submit">Login</button>
+
         </form>
+
         <button onclick="signupRedirect()">New User? Sign Up</button>
+
     </div>
 
     <script>
+
         let userType = '';
         let attempts = 0;
         
@@ -82,12 +92,27 @@
         }
 
         function validateForm() {
+
+            const userType = document.getElementById('userType').value;
+
+            if (userType === 'admin') {
+                document.getElementById('username').value = document.getElementById('Adminusername').value;
+                document.getElementById('password').value = document.getElementById('Adminpassword').value;
+            } else if (userType === 'patient') {
+                document.getElementById('username').value = document.getElementById('Patientusername').value;
+                document.getElementById('password').value = document.getElementById('Patientpassword').value;
+            }
+            
+
+
             attempts++;
             if(attempts > 3) {
                 alert("Too many login attempts. Please try again later.");
                 return false;
             }
-            return false;
+
+
+            return true;
         }
 
         window.onload = function() {
