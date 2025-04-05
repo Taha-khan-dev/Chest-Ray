@@ -1,6 +1,6 @@
 import os
 import sqlite3
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session, redirect, url_for
 
 
 def create_app(test_config=None):
@@ -40,9 +40,6 @@ def create_app(test_config=None):
             connection.row_factory = sqlite3.Row
             cur = connection.cursor()
 
-            cur.execute("SELECT name FROM sqlite_master WHERE type='table';")
-            print(cur.fetchall())
-
 
             username = request.form.get("username")
             password = request.form.get("password")
@@ -53,10 +50,9 @@ def create_app(test_config=None):
             elif usertype == "patient":
                 cur.execute("SELECT * FROM patients WHERE patient_name = ? AND patient_password = ?;", (username, password))
             else:
-                return "404"
+                return "404" #Make better
 
             user = cur.fetchone()
-
 
             if user and usertype == "admin":
                 session["username"] = user["user_name"]
@@ -64,7 +60,7 @@ def create_app(test_config=None):
                 
                 connection.close()
 
-                return render_template("index.html")
+                return render_template("dashboard.html")
             
             elif user and usertype == "patient":
                 session["username"] = user["patient_name"]
@@ -72,21 +68,18 @@ def create_app(test_config=None):
 
                 connection.close()
 
-                return render_template("index.html")
+                return render_template("dashboard.html")
 
 
             else:
                 connection.close()
-                return request.form
+                print(request.form)
+                return "Invaild Login"
 
-        except:
+        except Exception as error:
+            print(f"Error: {error}")
             return "404, can not reach database :C"
         
-
-
-
-
-
 
 
     @app.route("/dashboard")
