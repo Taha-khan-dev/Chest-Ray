@@ -65,8 +65,6 @@ def create_app(test_config=None):
             if user and usertype == "admin":
                 session["username"] = user["user_name"]
                 session["userType"] = usertype
-                
-                connection.close()
 
                 return redirect("dashboard")
             
@@ -74,19 +72,20 @@ def create_app(test_config=None):
                 session["username"] = user["patient_name"]
                 session["userType"] = usertype
 
-                connection.close()
-
                 return redirect("dashboard")
 
 
             else:
-                connection.close()
                 print(request.form)
                 return "Invaild Login"
 
         except Exception as error:
             print(f"Error: {error}")
             return "404, can not reach database :C"
+        
+
+        finally:
+            connection.close()
         
 
 
@@ -99,7 +98,10 @@ def create_app(test_config=None):
 
     @app.route("/createAccPatient")
     def createAccPatient():
-        return render_template("createAccPatient.html")
+        if "user" in session and session["userType"] == "admin":
+            return render_template("createAccPatient.html")
+        else:
+            return redirect("dashboard")
     
 
     @app.route("/signup")
@@ -110,42 +112,50 @@ def create_app(test_config=None):
     def AccountCreation():
 
         try:
-            connection = sqlite3.connect("CHESTRAYG6.db")
-            connection.row_factory = sqlite3.Row
-            cur = connection.cursor()
 
-            first_name = request.form.get("first_name")
-            last_name = request.form.get("last_name")
-            email = request.form.get("email")
-            tel = request.form.get("tel")
-            password = request.form.get("password")
-            dob = request.form.get("DOB")
-            gender = request.form.get("gender")
 
-            name = first_name + " " + last_name
+            if "user" in session and session["userType"] == "admin":
 
-            #medical_history should be added into account settings
+                connection = sqlite3.connect("CHESTRAYG6.db")
+                connection.row_factory = sqlite3.Row
+                cur = connection.cursor()
 
-            cur.execute("""
-                insert into patients (
-                        patient_name,
-                        patient_password,
-                        DOB,
-                        gender,
-                        medical_history,
-                        phone_number
-                        ) VALUES (?, ?, ?, ? , ?, ?)
-                """, (name, password, dob, gender, "", tel)
-                        )
+                first_name = request.form.get("first_name")
+                last_name = request.form.get("last_name")
+                email = request.form.get("email")
+                tel = request.form.get("tel")
+                password = request.form.get("password")
+                dob = request.form.get("DOB")
+                gender = request.form.get("gender")
 
-            connection.commit()
-            connection.close()
+                name = first_name + " " + last_name
 
-            return redirect("/dashboard")
+                #medical_history should be added into account settings
+
+                cur.execute("""
+                    insert into patients (
+                            patient_name,
+                            patient_password,
+                            DOB,
+                            gender,
+                            medical_history,
+                            phone_number
+                            ) VALUES (?, ?, ?, ? , ?, ?)
+                    """, (name, password, dob, gender, "", tel)
+                            )
+
+                connection.commit()
+
+                return redirect("/dashboard")
+
+            return "You are not an admin!"
 
         except Exception as error:
             print(f"Error: {error}")
             return "404, can not reach database :C"
+        
+        finally:
+            connection.close()
 
 
     return app
