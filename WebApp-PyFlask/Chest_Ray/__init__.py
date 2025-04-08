@@ -3,6 +3,7 @@ import sqlite3
 from flask import Flask, render_template, request, session, redirect
 
 
+
 def create_app(test_config=None):
 
     """Create and configure the app."""
@@ -25,11 +26,13 @@ def create_app(test_config=None):
     #Web Pages go below.
 
 
-    app.secret_key = "keyy"
+    app.secret_key = "keyy" #dont change later on otherwise sessions will be reset
+
+
 
     @app.route("/")
     def index():
-        if "user" in session:
+        if "username" in session:
             return redirect("dashboard") 
         
         return redirect("login")
@@ -63,8 +66,17 @@ def create_app(test_config=None):
             user = cur.fetchone()
 
             if user and usertype == "admin":
+
                 session["username"] = user["user_name"]
                 session["userType"] = usertype
+    
+
+                cur.execute("select user_id from users where user_name = ?", (username,))
+                id = cur.fetchone()
+                session["ID"] = id["user_id"]
+
+                #print("DONE")  #DEBUGGING
+                print(session)
 
                 return redirect("dashboard")
             
@@ -91,14 +103,14 @@ def create_app(test_config=None):
 
     @app.route("/dashboard")
     def dashboard():
-        if "user" in session:
-            return f"Welcome, {session['username']}! You are now logged in."
+        if "username" in session:
+            return f"Welcome, {session["username"]}! You are now logged in."
         return render_template("Login.html")
 
 
     @app.route("/createAccPatient")
     def createAccPatient():
-        if "user" in session and session["userType"] == "admin":
+        if "username" in session and session["userType"] == "admin":
             return render_template("createAccPatient.html")
         else:
             return redirect("dashboard")
@@ -114,7 +126,7 @@ def create_app(test_config=None):
         try:
 
 
-            if "user" in session and session["userType"] == "admin":
+            if "username" in session and session["userType"] == "admin":
 
                 connection = sqlite3.connect("CHESTRAYG6.db")
                 connection.row_factory = sqlite3.Row
@@ -127,6 +139,7 @@ def create_app(test_config=None):
                 password = request.form.get("password")
                 dob = request.form.get("DOB")
                 gender = request.form.get("gender")
+                Id = session["ID"]
 
                 name = first_name + " " + last_name
 
@@ -139,9 +152,10 @@ def create_app(test_config=None):
                             DOB,
                             gender,
                             medical_history,
-                            phone_number
-                            ) VALUES (?, ?, ?, ? , ?, ?)
-                    """, (name, password, dob, gender, "", tel)
+                            phone_number,
+                            doctor_user_id
+                            ) VALUES (?, ?, ?, ? , ?, ?, ?)
+                    """, (name, password, dob, gender, "", tel, Id)
                             )
 
                 connection.commit()
@@ -156,6 +170,44 @@ def create_app(test_config=None):
         
         finally:
             connection.close()
+
+
+
+
+    @app.route("/ClinicianDashbaord")
+    def ClinicianDashbaord():
+        
+        try:
+
+
+            connection = sqlite3.connect("CHESTRAYG6.db")
+            connection.row_factory = sqlite3.Row
+            cur = connection.cursor()
+
+
+            if "username" in session and session["userType"] == "admin":
+
+                Id = session["ID"]
+
+                cur.execute("select * from patients where doctor_user_id = ?", (Id))
+                rows = cur.fetchall()
+                render_template("ClinicianDashbaord.html", rows = rows)
+
+
+            elif "username" in session and session["userType"] == "director":
+
+                cur.execute("select * from patients")
+                rows = cur.fetchall()
+
+        except Exception as error:
+            print(f"Error: {error}")
+            return "404, can not reach database :C"
+
+        
+
+        finally:
+            connection.close()
+
 
 
     return app
