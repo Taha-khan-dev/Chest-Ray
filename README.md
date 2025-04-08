@@ -14,5 +14,8 @@ Refer to trello for detail.
 Refer to Flask Documentation to download Flask.
 
 Please be insie Chest-Ray\WebApp-PyFlask,
-Use 'cd Chest-Ray\WebApp-PyFlask',
-And then run 'flask --app Chest_Ray --debug run'
+
+Use *'cd Chest-Ray\WebApp-PyFlask'*,
+
+And then run *'flask --app Chest_Ray --debug run'*
+
