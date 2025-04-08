@@ -32,10 +32,10 @@ def create_app(test_config=None):
 
     @app.route("/")
     def index():
-        if "username" in session:
-            return redirect("dashboard") 
+        # if "username" in session:
+        #     return redirect("dashboard") 
         
-        return redirect("login")
+        return render_template("index.html")
     
     @app.route("/login")
     def login():
