@@ -1,0 +1,409 @@
+@font-face {
+    font-family: "fibra one regular";
+    src: url(font/regular.otf);
+}
+
+@font-face {
+    font-family: "fibra one bold";
+    src: url(font/bold.otf);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    padding: 40px 50px 10px 50px;
+    background-color: #E5D8C8;
+}
+
+nav {
+    display: flex;
+    justify-content: flex-end;
+    gap: 40px;
+}
+
+.mob-nav {
+    display: flex;
+    justify-content: end;
+    display: none;
+}
+
+.menu-list {
+    width: 100%;
+    height: 100vh;
+    background-color: #3b73a2;
+    position: absolute;
+    top: 0;
+    left: 100%;
+    display: none;
+    flex-direction: column;
+    gap: 50px;
+    transition: 0.5s ease-in-out;
+}
+
+.mob {
+    color: whitesmoke;
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+.MobloginButton {
+    background-color: whitesmoke;
+    color: #3b73a2;
+    padding: 8px 19px;
+    border-radius: 20px;
+}
+
+a {
+    text-decoration: none;
+    color: #191C24;
+    font-family: "fibra one bold";
+    border-bottom: solid transparent;
+    padding-bottom: 5px;
+    transition: 0.3s ease-in-out;
+}
+
+.button {
+    padding: 8px 19px;
+    border-radius: 20px;
+    width: max-content;
+    background-color: #3B73A2;
+    color: whitesmoke;
+    border: none;
+    font-family: "fibra one regular";
+    transition: 0.3s ease-in-out;
+}
+
+/* Headline Section */
+
+.headline {
+    margin-top: 90px;
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+
+}
+
+.headline img {
+    height: 80px;
+    align-self: center;
+}
+
+.headline h1 {
+    font-family: "fibra one bold";
+    font-size: 3.44rem;
+}
+
+.headline p {
+    font-family: "fibra one regular";
+    font-size: 1.56rem;
+}
+
+/* Main Image Section */
+
+.mainImg {
+    width: 100%;
+    margin-top: 50px;
+}
+
+/* Common Css for Patients, Health Workers, Clinicians Implementation Section */
+
+.patientsH,
+.workersH,
+.cliniciansH {
+    margin-top: 100px;
+    font-family: "fibra one Bold";
+    text-align: center;
+    font-size: 32px;
+}
+
+.patients,
+.workers,
+.clinicians {
+    margin: 50px 0;
+    display: flex;
+    justify-content: center;
+    gap: 90px;
+    line-height: 2;
+    flex-wrap: wrap;
+}
+
+.details {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 700px;
+}
+
+.details h2 {
+    font-family: "fibra one Bold";
+}
+
+.details .p1,
+.details .p2 {
+    font-family: "fibra one regular";
+}
+
+.patientsImg,
+.workersImg,
+.cliniciansImg {
+    width: 375px;
+    object-fit: contain;
+}
+
+/* Footer Section */
+
+footer h1 {
+    margin-top: 100px;
+    margin-bottom: 50px;
+    font-family: "fibra one Bold";
+    text-align: center;
+    font-size: 32px;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    gap: 160px;
+    flex-wrap: wrap;
+}
+
+/* Seggestions Section */
+
+.suggestions {
+    min-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.suggestions h2 {
+    font-family: "fibra one Bold";
+}
+
+input {
+    padding: 3px 4px;
+    border: none;
+    border-bottom: solid #191C24 2px;
+    background-color: transparent;
+    font-family: "fibra one regular";
+    transition: 0.3s ease-in-out;
+}
+
+.name {
+    display: flex;
+    gap: 10px;
+}
+
+.name input {
+    flex: 1;
+    width: 100%;
+}
+
+textarea {
+    padding: 3px 4px;
+    border: solid #191C24 2px;
+    background-color: transparent;
+    font-family: "fibra one regular";
+    resize: none;
+    height: 130px;
+    transition: 0.3s ease-in-out;
+}
+
+/* Contact Us Section */
+
+.contact {
+    min-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
+
+.contact h2 {
+    font-family: "fibra one Bold";
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+span {
+    font-family: "fibra one regular";
+    font-size: 12px;
+    display: block;
+    text-align: center;
+    margin-top: 40px;
+}
+
+/* Psuedo Elements */
+
+input:focus {
+    outline: none;
+    border-bottom: solid #3b73a2 2px;
+}
+
+textarea:focus {
+    outline: none;
+    border: solid #3b73a2 2px;
+}
+
+.button:hover {
+    cursor: pointer;
+    background-color: #2b4f6d;
+}
+
+a:hover {
+    border-bottom: solid #3b73a2;
+}
+
+/* Media Queries */
+
+@media (max-width: 1270px) {
+    .headliner h1 {
+        font-size: 3rem;
+    }
+
+    .headliner p {
+        font-size: 1.38rem;
+    }
+
+    .patients,
+    .workers,
+    .clinicians {
+        margin: 20px 0;
+        gap: 30px;
+    }
+
+    .details {
+        max-width: 900px;
+        order: 2;
+    }
+
+    .patientsImg,
+    .workersImg,
+    .cliniciansImg {
+        order: 1;
+    }
+
+    .container {
+        gap: 100px;
+    }
+
+}
+
+@media (max-width: 1200px) {
+    nav {
+        display: none;
+    }
+
+    .mob-nav {
+        display: flex;
+    }
+
+    .getStartedButton {
+        margin-right: 20px !important;
+        margin-top: 9px;
+    }
+
+    .headline {
+        margin-top: 55px;
+        gap: 15px;
+    }
+
+    .headline img {
+        height: 65px;
+    }
+
+    .headliner h1 {
+        font-size: 2.5rem;
+    }
+
+    .headliner p {
+        font-size: 1.2rem;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-content: center;
+        gap: 80px;
+    }
+
+    .suggestions,
+    .contact {
+        min-width: 600px;
+    }
+
+    .suggestions h2,
+    .contact h2 {
+        text-align: center;
+    }
+}
+
+@media (max-width: 850px) {
+    .headline {
+        margin-top: 55px;
+        gap: 15px;
+    }
+
+    .headline img {
+        height: 50px;
+    }
+
+    .headliner h1 {
+        font-size: 2rem;
+    }
+
+    .headliner p {
+        font-size: 1rem;
+    }
+
+    .patientsH,
+    .workersH,
+    .cliniciansH {
+        margin-top: 65px;
+    }
+}
+
+@media (max-width: 695px) {
+    .headline {
+        flex-direction: column;
+        gap: 0;
+    }
+
+    .headliner h1, .headliner p {
+        text-align: center;
+    }
+
+    .suggestions,
+    .contact {
+        min-width: 100%;
+    }
+
+    .patientsImg,
+    .workersImg,
+    .cliniciansImg {
+        width: 350px;
+    }
+}
+
+@media (max-width: 460px) {
+    body {
+        padding: 30px 20px 10px 20px;
+    }
+
+    .patientsImg,
+    .workersImg,
+    .cliniciansImg {
+        width: 280px;
+    }
+
+    .container {
+        gap: 50px;
+    }
+}
