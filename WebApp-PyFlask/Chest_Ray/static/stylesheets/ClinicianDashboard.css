@@ -1,0 +1,27 @@
+body {
+    font-family: 'fibra one';
+    background-color: #E5D8C8;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+
+th{
+    font-weight: bold;
+    padding: 12px;
+    text-align: left;
+    border-bottom: 2px solid #4744a4;
+}
+
+td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 2px solid #4744a4;
+}
+
+section{
+    padding-top: 5%;
+}

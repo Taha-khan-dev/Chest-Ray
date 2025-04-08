@@ -39,6 +39,8 @@ def create_app(test_config=None):
     
     @app.route("/login")
     def login():
+        if "username" in session:
+            return render_template("dashboard")
         return render_template("login.html")
 
 
@@ -104,7 +106,7 @@ def create_app(test_config=None):
     @app.route("/dashboard")
     def dashboard():
         if "username" in session:
-            return f"Welcome, {session["username"]}! You are now logged in."
+            return render_template("dashboard.html")
         return render_template("Login.html")
 
 
@@ -174,8 +176,8 @@ def create_app(test_config=None):
 
 
 
-    @app.route("/ClinicianDashbaord")
-    def ClinicianDashbaord():
+    @app.route("/ClinicianDashboard")
+    def ClinicianDashboard():
         
         try:
 
@@ -188,26 +190,37 @@ def create_app(test_config=None):
             if "username" in session and session["userType"] == "admin":
 
                 Id = session["ID"]
-
-                cur.execute("select * from patients where doctor_user_id = ?", (Id))
+                cur.execute("select * from patients where doctor_user_id = ?", (Id,))
                 rows = cur.fetchall()
-                render_template("ClinicianDashbaord.html", rows = rows)
+                return render_template("ClinicianDashboard.html", rows = rows)
 
 
             elif "username" in session and session["userType"] == "director":
 
                 cur.execute("select * from patients")
                 rows = cur.fetchall()
+                return render_template("ClinicianDashboard.html", rows = rows)
+            
+
+            else:
+                return redirect("/")
 
         except Exception as error:
             print(f"Error: {error}")
             return "404, can not reach database :C"
-
         
 
         finally:
             connection.close()
 
+
+
+
+
+    @app.route("/logout")
+    def logout():
+        session.clear()
+        return redirect("/")
 
 
     return app

@@ -1,22 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Patient Dashboard</title>
-
-    <link rel="stylesheet" href="../static/stylesheets/dashboard.css">
+    <title>Clinician Dashboard</title>
     <link rel="stylesheet" href="../static/stylesheets/index.css">
+    <link rel="stylesheet" href="../static/stylesheets/ClinicianDashboard.css">
     <link rel="shortcut icon" href="../static/favicon.ico">
-
 </head>
 <body>
 
-    <!-- Nav Bar Section by Faran, tiny edited by taha-->
 
-        <nav>
+     <!-- Nav Bar Section by Faran, tiny edited by taha-->
+
+     <nav>
         <a href="/">Home</a>
         <div class="loginButton" style="margin-left: -10px;"><a class="button" href="/logout">Logout</a></div>
     </nav>
@@ -37,6 +32,47 @@
     </div>
 
 
-    <!-- [ e ] -->
+
+
+    <!--[ Datbase part by taha ]-->
+
+    
+    <section>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>DOB</th>
+                    <th>Gender</th>
+                    <th>Medical History</th>
+                    <th>Phone Number</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for row in rows %}
+
+                <tr>
+                    <td>{{ row.patient_name }}</td>
+                    <td>{{ row.DOB }}</td>
+                    <td>{{ row.gender }}</td>
+                    <td>{{ row.medical_history }}</td>
+                    <td>{{ row.phone_number }}</td>
+                    <td>{{ row.email_ID }}</td>
+                </tr>
+
+                {% endfor %}
+
+
+            </tbody>
+
+
+
+        </table>
+
+
+    </section>
 
 </body>
