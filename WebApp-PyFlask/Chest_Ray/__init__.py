@@ -1,6 +1,8 @@
 import os
 import sqlite3
+from datetime import date
 from flask import Flask, render_template, request, session, redirect
+
 
 """
 
@@ -8,6 +10,7 @@ All the code below for making this thing work :D
 Will add better explanation later
 
 -Taha
+
 """
 
 
@@ -80,6 +83,7 @@ def create_app(test_config=None):
 
                 session["username"] = user["user_name"]
                 session["userType"] = usertype
+
     
 
                 cur.execute("select user_id from users where user_name = ?", (username,))
@@ -89,7 +93,7 @@ def create_app(test_config=None):
                 #print("DONE")  #DEBUGGING
                 print(session)
 
-                return redirect("dashboard")
+                return redirect("/ClinicianDashboard")
             
             elif user and usertype == "patient":
                 session["username"] = user["patient_name"]
@@ -126,7 +130,7 @@ def create_app(test_config=None):
 
                     cur.execute("select * from patients where patient_name = ?", (username,)) #bro
                     Patientrow = cur.fetchone()
-
+                    PatientID = Patientrow["patient_id"]
 
                     getDocID = connection.cursor()
                     getDocID.execute("select doctor_user_id from patients where patient_name = ?", (username,))
@@ -143,7 +147,23 @@ def create_app(test_config=None):
                         secondcur = connection.cursor()
                         secondcur.execute("select * from users where user_id = ?", (ID,))
                         Doctorrow = secondcur.fetchone()
-                        return render_template("dashboard.html", Patientrow = Patientrow, Doctorrow = Doctorrow)
+
+
+
+                        getxray = connection.cursor()
+                        getxray.execute("select * from chestrayimages where patient_id = ?", (PatientID,))
+                        xraysend = getxray.fetchone()
+                        print(xraysend["ai_generated_diagnosis"])
+
+                        #checks because db coding is werid
+                        if xraysend:
+                            boolSend = xraysend["ai_generated_diagnosis"]
+                        if boolSend == 1:
+                            boolSend = True
+                        elif boolSend == 0:
+                            boolSend = False
+
+                        return render_template("dashboard.html", Patientrow = Patientrow, Doctorrow = Doctorrow, xraysend = xraysend, boolSend = boolSend)
                     
                     else:
                         '''
@@ -183,7 +203,12 @@ def create_app(test_config=None):
             
             except Exception as error:
                 print(f"Error: {error}")
-                return "404, can not reach database :C"
+
+                if "username" in session and session["userType"] == "patient":
+                    return "404, can not reach database :C"
+                elif "username" in session and session["userType"] == "admin":
+                    print("Did not select patient")
+                    return redirect("/ClinicianDashboard")
 
             finally:
                 connection.close()
@@ -323,31 +348,39 @@ def create_app(test_config=None):
         import os
 
         if "xray" not in request.files:
-            return
+            return redirect("/dashboard")
 
-        
         import numpy as np
         import matplotlib.pyplot as plt
         import tensorflow as tf
         import cv2
         from tensorflow import keras
         from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
-        model = keras.models.load_model("model.keras")
-
         import io
         from PIL import Image
 
         file = request.files["xray"]
-        file_bytes = file.read()
-        imgPredict = Image.open(io.BytesIO(file_bytes)).convert("RGB") #greyscale it maybe
-        imgPredict = imgPredict.resize((250, 250))
+        filename = file.filename #can be the ID of the file
+        print(filename)
+        #upload_dir = os.path.join("static", "uploads")
+        #os.makedirs(upload_dir, exist_ok=True)
+        path = os.path.join("Chest_Ray/static/uploads", filename)
+        file.save(path)
+
+        model = keras.models.load_model("model.keras")
+
+        #img = Image.open(path)
+
+        imgNp = np.array([cv2.imread(path)])
+
+        #imgNp = np.array(imgPredict) / 255.0 #shape
+        #imgNp = np.expand_dims(imgNp, axis=0)  #shape
+
+        # imgPredict = Image.open(io.BytesIO(file_bytes)).convert("RGB") #greyscale it maybe
+        # imgPredict = imgPredict.resize((250, 250))
         
 
 
-        imgNp = np.array(imgPredict) / 255.0 #shape
-        imgNp = np.expand_dims(imgNp, axis=0)  #shape
-
-        #imgPredict = np.array([cv2.imread(img)])
         
         model.predict(imgNp)
         probabilities = tf.nn.softmax(model.predict(imgNp))
@@ -362,7 +395,119 @@ def create_app(test_config=None):
         
         print(Pneumonia)
 
-        return redirect("/dashboard")
+
+        """
+        
+        COPY OF /DASHBOARD FIT FOR XRAY TO LOAD THE DETAILS AGAIN
+        Why - Taha :}
+        
+        """
+
+
+
+
+        if "username" in session:
+
+            try:
+                connection = sqlite3.connect("CHESTRAYG6.db")
+                connection.row_factory = sqlite3.Row
+                cur = connection.cursor()
+
+
+
+
+
+
+
+                if "username" in session and session["userType"] == "patient":
+                    username = session["username"]
+
+                    cur.execute("select * from patients where patient_name = ?", (username,)) #bro
+                    Patientrow = cur.fetchone()
+
+
+                    getDocID = connection.cursor()
+                    getDocID.execute("select doctor_user_id from patients where patient_name = ?", (username,))
+
+                    docID = getDocID.fetchone()
+
+                    ID = docID["doctor_user_id"]
+                    #for debugging
+                    #print(username)
+                    #print(ID)
+
+                    if docID:
+                        #Get the doc info if he has one (always should anyways) but still check :/
+                        secondcur = connection.cursor()
+                        secondcur.execute("select * from users where user_id = ?", (ID,))
+                        Doctorrow = secondcur.fetchone()
+                        return render_template("dashboard.html", Patientrow = Patientrow, Doctorrow = Doctorrow)
+                    
+                    else:
+                        '''
+                        Everyone HAS a doctor. This case is impossible.
+                        However, if in the furture a Patient can make an account without the doctor is required,
+                        this code block will be edited.
+                        '''
+
+                        Doctorrow = ""
+                        return render_template("dashboard.html", Patientrow = Patientrow, Doctorrow = Doctorrow, filename = filename, Pneumonia = Pneumonia)
+                
+
+                elif "username" in session and session["userType"] == "admin" and session["PatientID"]:
+
+                    """
+                    Either make it so the HTTP web page for the ClinicianDashboard sends back the name of the Patient selected,
+                    then make a new session["PatientID"],
+                    then load all that into the dashboard again code here, to see it all.
+                    """
+
+                    username = session["PatientID"] #for now ID stores name, WILL CHANGE LATER if I have time
+                    doctorID = session["ID"]
+
+                    cur.execute("select * from patients where patient_name = ?", (username,))
+                    Patientrow = cur.fetchone()
+
+                    secondcur = connection.cursor()
+                    secondcur.execute("select * from users where user_id = ?", (doctorID,))
+                    Doctorrow = secondcur.fetchone()
+
+
+                    idForPatient = connection.cursor()
+                    idForPatient.execute("select patient_id from patients where patient_name = ?", (username,))
+                    idForPat = idForPatient.fetchone()
+                    realID = idForPat["patient_id"]
+
+                    #save xray to db :{
+
+                    thedate = date.today()
+
+                    newcur = connection.cursor()
+                    newcur.execute("""
+                    insert into chestrayimages (patient_id, user_id, FILE_PATH, upload_date, ai_generated_diagnosis, Description)
+                    values (?, ?, ?, ?, ?, ?)
+                    """, (realID, doctorID, filename, thedate, Pneumonia, ""))
+                    connection.commit()
+
+
+                    return render_template("dashboard.html", Patientrow = Patientrow, Doctorrow = Doctorrow, filename = filename, Pneumonia = Pneumonia)              
+
+                else:
+                    return redirect("/ClinicianDashboard")
+
+            
+            except Exception as error:
+                print(f"Error: {error}")
+
+                if "username" in session and session["userType"] == "patient":
+                    return "404, can not reach database :C"
+                elif "username" in session and session["userType"] == "admin":
+                    print("Did not select patient")
+                    return redirect("/ClinicianDashboard")
+
+            finally:
+                connection.close()
+
 
     return app
 

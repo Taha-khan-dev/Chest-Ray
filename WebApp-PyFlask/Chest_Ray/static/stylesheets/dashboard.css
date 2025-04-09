@@ -81,6 +81,7 @@ body {
   padding: 15px;
   display: flex;
   align-items: center;
+  justify-content: center;
   flex: 1;
   margin: 0 10px;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.35);
@@ -89,6 +90,8 @@ body {
 .contact-text {
   font-size: 14px;
   text-align: center;
+  align-items: center;
+  justify-content: center;
 }
 
 .content-row {
@@ -113,12 +116,16 @@ body {
   margin-top: 0;
   margin-bottom: 15px;
   font-size: 16px;
+  align-items: center;
+  justify-content: center;
 }
 
 .file {
   display: flex;
   align-items: center;
   margin-bottom: 15px;
+  align-items: center;
+  justify-content: center;
 }
 
 .xray-section {
@@ -133,11 +140,47 @@ body {
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.35);
 }
 
+.xray-section img{
+  width: 250px;
+  height: auto;
+  margin: 15px;
+  border-radius: 5px;
+}
+
+.xray-section h1 {
+  margin: 5px;
+  font-size: 20px;
+
+}
+
+.xray-section h2 {
+  margin: 5px;
+  font-size: 24px;
+
+}
+
+.xray-section p{
+  margin: 5px;
+  font-size: 10px;
+
+}
+
+.xray-resubmit{
+  padding: 8px 19px;
+  border-radius: 20px;
+  width: max-content;
+  background-color: #3B73A2;
+  color: whitesmoke;
+  cursor: pointer;
+  border: none;
+  font-family: "fibra one regular";
+  transition: 0.3s ease-in-out;
+}
+
 
 /* [ For xray - taha ] */
 
 input::file-selector-button{
-
   padding: 8px 19px;
   border-radius: 20px;
   width: max-content;
