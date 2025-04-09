@@ -25,3 +25,15 @@ td {
 section{
     padding-top: 5%;
 }
+
+button{
+    padding: 8px 19px;
+    border-radius: 20px;
+    width: max-content;
+    background-color: #3B73A2;
+    color: whitesmoke;
+    cursor: pointer;
+    border: none;
+    font-family: "fibra one regular";
+    transition: 0.3s ease-in-out;
+}

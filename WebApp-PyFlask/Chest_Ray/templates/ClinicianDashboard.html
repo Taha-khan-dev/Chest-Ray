@@ -47,6 +47,7 @@
                     <th>Medical History</th>
                     <th>Phone Number</th>
                     <th>Email</th>
+                    <th>VIew</th>
                 </tr>
             </thead>
 
@@ -61,6 +62,12 @@
                     <td>{{ row.medical_history }}</td>
                     <td>{{ row.phone_number }}</td>
                     <td>{{ row.email_ID }}</td>
+                    <td>
+                        <form method = "POST" action = "/PatientSelected">
+                        <input type = "hidden" name = "PatientID" value = "{{ row.patient_name }}">
+                        <button type = "submit">View</button>
+                        </form>
+                    </td>
                 </tr>
 
                 {% endfor %}

@@ -1,42 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Patient Dashboard</title>
 
     <link rel="stylesheet" href="../static/stylesheets/dashboard.css">
-    <link rel="stylesheet" href="../static/stylesheets/index.css">
     <link rel="shortcut icon" href="../static/favicon.ico">
+
 
 </head>
 <body>
-
-    <!-- Nav Bar Section by Faran, tiny edited by taha-->
-
-        <nav>
-        <a href="/">Home</a>
-        <div class="loginButton" style="margin-left: -10px;"><a class="button" href="/logout">Logout</a></div>
-    </nav>
-
-    <div class="mob-nav">
-        <div class="getStartedButton" style="margin-right: -19px;"><a class="button" href="">Get Started</a></div>
-        <svg xmlns="http://www.w3.org/2000/svg" width="40px" height="40px" viewBox="0 0 20 20" fill="none" class="menu-open">
-            <path fill="#3b73a2" fill-rule="evenodd" d="M18 5a1 1 0 100-2H2a1 1 0 000 2h16zm-4 4a1 1 0 100-2H6a1 1 0 100 2h8zm5 3a1 1 0 01-1 1H2a1 1 0 110-2h16a1 1 0 011 1zm-5 5a1 1 0 100-2H6a1 1 0 100 2h8z"/>
-        </svg>
-    </div>
-
-    <div class="menu-list">
-        <svg xmlns="http://www.w3.org/2000/svg" width="60px" height="60px" viewBox="0 0 24 24" fill="none" style="position: absolute; top: 28px; right: 39px;" class="menu-close">
-            <path d="M6.99486 7.00636C6.60433 7.39689 6.60433 8.03005 6.99486 8.42058L10.58 12.0057L6.99486 15.5909C6.60433 15.9814 6.60433 16.6146 6.99486 17.0051C7.38538 17.3956 8.01855 17.3956 8.40907 17.0051L11.9942 13.4199L15.5794 17.0051C15.9699 17.3956 16.6031 17.3956 16.9936 17.0051C17.3841 16.6146 17.3841 15.9814 16.9936 15.5909L13.4084 12.0057L16.9936 8.42059C17.3841 8.03007 17.3841 7.3969 16.9936 7.00638C16.603 6.61585 15.9699 6.61585 15.5794 7.00638L11.9942 10.5915L8.40907 7.00636C8.01855 6.61584 7.38538 6.61584 6.99486 7.00636Z" fill="whitesmoke"/>
-        </svg>
-        <a href="/" class="mob" style="margin-top: 130px;">Home</a>
-        <div class="loginButton" style="margin: 0 auto;"><a class="MobloginButton" href="/logout">Logout</a></div>
+    <div class="header">
+        <a class="button" href = "/">Home</a>
+        <a class="button" href = "/logout">Logout</a>
     </div>
 
 
-    <!-- [ e ] -->
+    <div class="container">
+        
+        <div class="patient">
+            <div class="p-pic">profile pic</div>
+            <div class="p-info">
+                <h1>{{ Patientrow['patient_name'] }}</h1>
+                <p>Patient ID: {{ Patientrow['patient_id'] }}</p>
+            </div>
+        </div>
+        
+        <div class="contact-section">
+            <div class="contact-box">
+                <div class="contact-text">
+                    <img src = "">
+                    <br>
+                    {{ Patientrow['email_ID'] }}
+                </div>
+            </div>
+            
+            <div class="contact-box">
+                <div class="contact-text">
+                    <img src = "">
+                    <br>
+                    {{ Patientrow['phone_number'] }}
+                </div>
+            </div>
+            
+            <div class="contact-box">
+                <div class="contact-text">
+                    <img src = "">
+                    <br>
+
+                    Clinician info
+                    <br>
+                    Name: {{ Doctorrow['Full_Name'] }}
+                    <br>
+                    Email: {{ Doctorrow['email_address'] }}
+                    <br>
+                    Contact No: {{ Doctorrow['phone_numb'] }}
+
+
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-row">
+            <div class="reports-section">
+                <h3 class="reports-title">REPORTS</h3>
+                
+                <div class="file">
+                    <img src = "">
+                    <br>
+                    file.doc
+                </div>
+                
+                <div class="file">
+                    <img src = "">
+                    <br>
+                    file.doc
+                </div>
+                
+                <div class="file">
+                    <img src = "">
+                    <br>
+                    file.doc
+                </div>
+            </div>
+            
+            <div class="xray-section">
+                XRAY IMAGE HERE
+            </div>
+        </div>
+    </div>
 
 </body>
+</html>

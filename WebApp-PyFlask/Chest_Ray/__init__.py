@@ -2,6 +2,13 @@ import os
 import sqlite3
 from flask import Flask, render_template, request, session, redirect
 
+"""
+
+All the code below for making this thing work :D
+Will add better explanation later
+
+-Taha
+"""
 
 
 def create_app(test_config=None):
@@ -40,7 +47,7 @@ def create_app(test_config=None):
     @app.route("/login")
     def login():
         if "username" in session:
-            return render_template("dashboard")
+            return redirect("/dashboard")
         return render_template("login.html")
 
 
@@ -106,8 +113,94 @@ def create_app(test_config=None):
     @app.route("/dashboard")
     def dashboard():
         if "username" in session:
-            return render_template("dashboard.html")
+
+            try:
+                connection = sqlite3.connect("CHESTRAYG6.db")
+                connection.row_factory = sqlite3.Row
+                cur = connection.cursor()
+
+                if "username" in session and session["userType"] == "patient":
+                    username = session["username"]
+
+                    cur.execute("select * from patients where patient_name = ?", (username,)) #bro
+                    Patientrow = cur.fetchone()
+
+
+                    getDocID = connection.cursor()
+                    getDocID.execute("select doctor_user_id from patients where patient_name = ?", (username,))
+
+                    docID = getDocID.fetchone()
+
+                    ID = docID["doctor_user_id"]
+                    #for debugging
+                    #print(username)
+                    #print(ID)
+
+                    if docID:
+                        #Get the doc info if he has one (always should anyways) but still check :/
+                        secondcur = connection.cursor()
+                        secondcur.execute("select * from users where user_id = ?", (ID,))
+                        Doctorrow = secondcur.fetchone()
+                        return render_template("dashboard.html", Patientrow = Patientrow, Doctorrow = Doctorrow)
+                    
+                    else:
+                        '''
+                        Everyone HAS a doctor. This case is impossible.
+                        However, if in the furture a Patient can make an account without the doctor is required,
+                        this code block will be edited.
+                        '''
+
+                        Doctorrow = ""
+                        return render_template("dashboard.html", Patientrow = Patientrow, Doctorrow = Doctorrow)
+                
+
+                elif "username" in session and session["userType"] == "admin" and session["PatientID"]:
+
+                    """
+                    Either make it so the HTTP web page for the ClinicianDashboard sends back the name of the Patient selected,
+                    then make a new session["PatientID"],
+                    then load all that into the dashboard again code here, to see it all.
+                    """
+
+                    username = session["PatientID"] #for now ID stores name, WILL CHANGE LATER if I have time
+                    doctorID = session["ID"]
+
+                    cur.execute("select * from patients where patient_name = ?", (username,))
+                    Patientrow = cur.fetchone()
+
+                    secondcur = connection.cursor()
+                    secondcur.execute("select * from users where user_id = ?", (doctorID,))
+                    Doctorrow = secondcur.fetchone()
+
+
+                    return render_template("dashboard.html", Patientrow = Patientrow, Doctorrow = Doctorrow)              
+
+                else:
+                    return redirect("/")
+
+            
+            except Exception as error:
+                print(f"Error: {error}")
+                return "404, can not reach database :C"
+
+            finally:
+                connection.close()
+
+
         return render_template("Login.html")
+
+    
+    @app.route("/PatientSelected", methods = ['POST'])
+    def PatientSelected():
+        if "username" in session and session["userType"] == "admin":
+            PatientID = request.form.get("PatientID") #later can be changed to patient ID, but the way the databse works rn using name
+            if PatientID:
+                session["PatientID"] = PatientID 
+                print(PatientID)
+                return redirect("/dashboard")
+            else:
+                #return "You have not chosen an Patient to view from."
+                return redirect("/ClinicianDashboard")
 
 
     @app.route("/createAccPatient")
@@ -115,7 +208,7 @@ def create_app(test_config=None):
         if "username" in session and session["userType"] == "admin":
             return render_template("createAccPatient.html")
         else:
-            return redirect("dashboard")
+            return redirect("/dashboard")
     
 
     @app.route("/signup")

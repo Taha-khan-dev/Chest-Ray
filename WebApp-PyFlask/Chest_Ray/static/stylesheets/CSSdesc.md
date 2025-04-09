@@ -3,7 +3,7 @@
 
 Bg color: #E5D8C8
 Login box bg color: #D9C8B2
-Font family : 
+Font family : 'fibra one'
 
 Extra colours info:
 #4744a4
