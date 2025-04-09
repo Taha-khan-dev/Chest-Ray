@@ -86,7 +86,10 @@
             </div>
             
             <div class="xray-section">
-                XRAY IMAGE HERE
+                <form method = "POST" action = "/xrayAI" enctype = "multipart/form-data">
+                    <input type = "file" name = "xray" accept = "image/*" required>
+                    <button type = "submit">Predict</button>
+                </form>
             </div>
         </div>
     </div>

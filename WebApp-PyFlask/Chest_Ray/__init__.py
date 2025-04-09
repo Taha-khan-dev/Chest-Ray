@@ -46,8 +46,10 @@ def create_app(test_config=None):
     
     @app.route("/login")
     def login():
-        if "username" in session:
+        if "username" in session and session["userType"] == "patient":
             return redirect("/dashboard")
+        elif "username" in session and session["userType"] == "admin":
+            return redirect("/ClinicianDashboard")
         return render_template("login.html")
 
 
@@ -176,7 +178,7 @@ def create_app(test_config=None):
                     return render_template("dashboard.html", Patientrow = Patientrow, Doctorrow = Doctorrow)              
 
                 else:
-                    return redirect("/")
+                    return redirect("/ClinicianDashboard")
 
             
             except Exception as error:
@@ -315,6 +317,52 @@ def create_app(test_config=None):
         session.clear()
         return redirect("/")
 
+
+    @app.route("/xrayAI", methods = ["POST"])
+    def xrayAI():
+        import os
+
+        if "xray" not in request.files:
+            return
+
+        
+        import numpy as np
+        import matplotlib.pyplot as plt
+        import tensorflow as tf
+        import cv2
+        from tensorflow import keras
+        from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+        model = keras.models.load_model("model.keras")
+
+        import io
+        from PIL import Image
+
+        file = request.files["xray"]
+        file_bytes = file.read()
+        imgPredict = Image.open(io.BytesIO(file_bytes)).convert("RGB") #greyscale it maybe
+        imgPredict = imgPredict.resize((250, 250))
+        
+
+
+        imgNp = np.array(imgPredict) / 255.0 #shape
+        imgNp = np.expand_dims(imgNp, axis=0)  #shape
+
+        #imgPredict = np.array([cv2.imread(img)])
+        
+        model.predict(imgNp)
+        probabilities = tf.nn.softmax(model.predict(imgNp))
+        predicted_class = np.argmax(model.predict(imgNp), axis=-1)[0]
+        print(probabilities)
+        print(predicted_class)
+
+        if predicted_class == 1:
+            Pneumonia = True
+        else:
+            Pneumonia = False
+        
+        print(Pneumonia)
+
+        return redirect("/dashboard")
 
     return app
 
