@@ -90,9 +90,9 @@
             <div class="xray-section">
                 <!-- <h1>X-Ray Result</h1><br> -->
                 {% if xraysend.ai_generated_diagnosis == "1" %}
-                <h2>We regret to inform you, that pneumonia was detected, seek counsel from your doctor.</h2>
+                <h3>We regret to inform you, that pneumonia was detected, please do seek counsel from your doctor.</h3>
                 {% elif xraysend.ai_generated_diagnosis == "0" %}
-                <h2>Pneumonia was not found, please stand by for conformation in a maximum of 4 weeks.</h2>
+                <h3>Pneumonia was not found, please stand by for conformation in a maximum of 4 weeks.</h3>
                 {% endif %}
 
                 <img src = "{{ url_for('static', filename='uploads/' + xraysend.FILE_PATH) }}" alt = "X-Ray" >
@@ -134,9 +134,22 @@
                 </form>
             </div>
             {% endif %}
-
-
             {% endif %}
+
+            {% if clinician == "True" %}
+            <div class="xray-section">
+                <form method = "POST" action = "/reviewed">
+                    <label for = "Diagnosis">Confirm Diagnosis:</label>
+                    <select name = "Diagnosis">
+                        <option value = "yes">Has pneumonia</option>
+                        <option value = "no">Does NOT have pneumonia</option>
+                    </select>
+                    <br>
+                    <button type = "submit">Submit</button>
+                </form>
+            </div>
+            {% endif %}
+
         </div>
     </div>
 

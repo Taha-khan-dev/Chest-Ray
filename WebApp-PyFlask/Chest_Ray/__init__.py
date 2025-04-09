@@ -51,7 +51,7 @@ def create_app(test_config=None):
     def login():
         if "username" in session and session["userType"] == "patient":
             return redirect("/dashboard")
-        elif "username" in session and session["userType"] == "admin":
+        elif "username" in session and session["userType"] == "admin" or "username" in session and session["userType"] == "director" or "username" in session and session["userType"] == "clinician":
             return redirect("/ClinicianDashboard")
         return render_template("login.html")
 
@@ -70,7 +70,7 @@ def create_app(test_config=None):
             password = request.form.get("password")
             usertype = request.form.get("userType")
 
-            if usertype == "admin":
+            if usertype == "admin" or usertype == "director" or usertype == "clinician":
                 cur.execute("SELECT * FROM users WHERE user_name = ? AND password = ?;", (username, password))
             elif usertype == "patient":
                 cur.execute("SELECT * FROM patients WHERE patient_name = ? AND patient_password = ?;", (username, password))
@@ -79,10 +79,12 @@ def create_app(test_config=None):
 
             user = cur.fetchone()
 
-            if user and usertype == "admin":
-
+            if user and usertype == "admin" or user and usertype == "director" or user and usertype == "clinician":
+            
+                UpdatedType = user["user_role"]
+                print(UpdatedType)
                 session["username"] = user["user_name"]
-                session["userType"] = usertype
+                session["userType"] = UpdatedType
 
     
 
@@ -176,7 +178,7 @@ def create_app(test_config=None):
                         return render_template("dashboard.html", Patientrow = Patientrow, Doctorrow = Doctorrow)
                 
 
-                elif "username" in session and session["userType"] == "admin" and session["PatientID"]:
+                elif "username" in session and session["userType"] == "admin" and session["PatientID"] or "username" in session and session["userType"] == "director" and session["PatientID"] or "username" in session and session["userType"] == "clinician" and session["PatientID"]:
 
                     """
                     Either make it so the HTTP web page for the ClinicianDashboard sends back the name of the Patient selected,
@@ -189,13 +191,33 @@ def create_app(test_config=None):
 
                     cur.execute("select * from patients where patient_name = ?", (username,))
                     Patientrow = cur.fetchone()
+                    PatientID = Patientrow["patient_id"]
 
                     secondcur = connection.cursor()
                     secondcur.execute("select * from users where user_id = ?", (doctorID,))
                     Doctorrow = secondcur.fetchone()
 
 
-                    return render_template("dashboard.html", Patientrow = Patientrow, Doctorrow = Doctorrow)              
+                    getxray = connection.cursor()
+                    getxray.execute("select * from chestrayimages where patient_id = ?", (PatientID,))
+                    xraysend = getxray.fetchone()
+                    print(xraysend["ai_generated_diagnosis"])
+
+                    #checks because db coding is werid
+                    if xraysend:
+                        boolSend = xraysend["ai_generated_diagnosis"]
+                    if boolSend == 1:
+                        boolSend = True
+                    elif boolSend == 0:
+                        boolSend = False
+
+                    
+                    if session["userType"] == "clinician":
+                        clinician = "True"
+                    else:
+                        clinician = "False"
+
+                    return render_template("dashboard.html", Patientrow = Patientrow, Doctorrow = Doctorrow, xraysend = xraysend, boolSend = boolSend, clinician = clinician)             
 
                 else:
                     return redirect("/ClinicianDashboard")
@@ -206,7 +228,7 @@ def create_app(test_config=None):
 
                 if "username" in session and session["userType"] == "patient":
                     return "404, can not reach database :C"
-                elif "username" in session and session["userType"] == "admin":
+                elif "username" in session and session["userType"] == "admin" or "username" in session and session["userType"] == "director" or "username" in session and session["userType"] == "clinician":
                     print("Did not select patient")
                     return redirect("/ClinicianDashboard")
 
@@ -217,9 +239,57 @@ def create_app(test_config=None):
         return render_template("Login.html")
 
     
+    @app.route("/reviewed", methods = ['POST'])
+    def reviewed():
+
+        if "username" in session and session["userType"] == "clinician" and session["PatientID"]:
+
+
+
+            try: 
+                connection = sqlite3.connect("CHESTRAYG6.db")
+                connection.row_factory = sqlite3.Row
+                cur = connection.cursor()
+
+                Diagnosis = request.form.get("Diagnosis")
+                #OverrideDescription = request.form.get("OverrideDescription")
+
+                username = session["PatientID"]
+                cur.execute("select * from patients where patient_name = ?", (username,))
+                Patientrow = cur.fetchone()
+                PatientID = Patientrow["patient_id"]
+                    
+                secondcur = connection.cursor()
+                secondcur.execute("update patients set reviewed = ? where patient_id = ?", ("Yes", PatientID))
+
+                getxray = connection.cursor()
+                getxray.execute("select * from chestrayimages where patient_id = ?", (PatientID,))
+                xraysend = getxray.fetchone()
+
+                if Diagnosis == "yes":
+                    if xraysend:
+                        xraysend["ai_generated_diagnosis"] = 1 #OverrideDiagnosis has
+                        #xraysend["Description"] = OverrideDescription
+
+                elif Diagnosis == "no":
+                    if xraysend:
+                        xraysend["ai_generated_diagnosis"] = 0 #OverrideDiagnosis has
+                        #xraysend["Description"] = OverrideDescription
+
+                return redirect("/ClinicianDashboard")
+
+            except Exception as error:
+                print(f"Error: {error}")
+
+            finally:
+                connection.close()
+        
+        return "Went wrong"
+
+
     @app.route("/PatientSelected", methods = ['POST'])
     def PatientSelected():
-        if "username" in session and session["userType"] == "admin":
+        if "username" in session and session["userType"] == "admin" or "username" in session and session["userType"] == "director" or "username" in session and session["userType"] == "clinician":
             PatientID = request.form.get("PatientID") #later can be changed to patient ID, but the way the databse works rn using name
             if PatientID:
                 session["PatientID"] = PatientID 
@@ -232,7 +302,7 @@ def create_app(test_config=None):
 
     @app.route("/createAccPatient")
     def createAccPatient():
-        if "username" in session and session["userType"] == "admin":
+        if "username" in session and session["userType"] == "admin"  or "username" in session and session["userType"] == "director":
             return render_template("createAccPatient.html")
         else:
             return redirect("/dashboard")
@@ -248,7 +318,7 @@ def create_app(test_config=None):
         try:
 
 
-            if "username" in session and session["userType"] == "admin":
+            if "username" in session and session["userType"] == "admin"  or "username" in session and session["userType"] == "director":
 
                 connection = sqlite3.connect("CHESTRAYG6.db")
                 connection.row_factory = sqlite3.Row
@@ -300,8 +370,6 @@ def create_app(test_config=None):
     def ClinicianDashboard():
         
         try:
-
-
             connection = sqlite3.connect("CHESTRAYG6.db")
             connection.row_factory = sqlite3.Row
             cur = connection.cursor()
@@ -315,7 +383,7 @@ def create_app(test_config=None):
                 return render_template("ClinicianDashboard.html", rows = rows)
 
 
-            elif "username" in session and session["userType"] == "director":
+            elif "username" in session and session["userType"] == "director" or "username" in session and session["userType"] == "clinician":
 
                 cur.execute("select * from patients")
                 rows = cur.fetchall()
@@ -454,7 +522,7 @@ def create_app(test_config=None):
                         return render_template("dashboard.html", Patientrow = Patientrow, Doctorrow = Doctorrow, filename = filename, Pneumonia = Pneumonia)
                 
 
-                elif "username" in session and session["userType"] == "admin" and session["PatientID"]:
+                elif "username" in session and session["userType"] == "admin" and session["PatientID"] or "username" in session and session["userType"] == "director" and session["PatientID"] or "username" in session and session["userType"] == "clinician" and session["PatientID"]:
 
                     """
                     Either make it so the HTTP web page for the ClinicianDashboard sends back the name of the Patient selected,
@@ -501,7 +569,7 @@ def create_app(test_config=None):
 
                 if "username" in session and session["userType"] == "patient":
                     return "404, can not reach database :C"
-                elif "username" in session and session["userType"] == "admin":
+                elif "username" in session and session["userType"] == "admin" or "username" in session and session["userType"] == "director" or "username" in session and session["userType"] == "clinician":
                     print("Did not select patient")
                     return redirect("/ClinicianDashboard")
 
