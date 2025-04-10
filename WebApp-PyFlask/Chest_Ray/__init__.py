@@ -264,6 +264,13 @@ def create_app(test_config=None):
 
             try: 
 
+                cur = connection.cursor()
+                cur.execute("select * from patients where patient_name = ?", (username,))
+                Patientrow = cur.fetchone()
+                realPatientID = Patientrow["patient_id"]
+                Patientname = Patientrow["patient_name"]
+
+
                 PatientID = session["PatientID"]
                 username = session["username"]
 
@@ -274,42 +281,66 @@ def create_app(test_config=None):
                 Diagnosis = request.form.get("Diagnosis")
                 OverrideDescription = request.form.get("OverrideDescription")
                     
-                cur.execute("update patients set reviewed = ? where patient_name = ?", ("Yes", PatientID,))
+                cur.execute("update patients set reviewed = ? where patient_id = ?", ("Yes", realPatientID,))
 
 
-                print(PatientID)
+                print(realPatientID)
 
-                cur.execute("update chestrayimages set Description = ? where patient_id = ?", (OverrideDescription, PatientID,)) #OverrideDescription
+                cur.execute("update chestrayimages set Description = ? where patient_id = ?", (OverrideDescription, realPatientID,)) #OverrideDescription
 
-                cur.execute("select * from chestrayimages where patient_id = ?", (PatientID,))
+                cur.execute("select * from chestrayimages where patient_id = ?", (realPatientID,))
                 xraysend = cur.fetchone()
 
-                # print(xraysend)
+                #Email SMTP part
 
-                # cur.execute("select * from patients where patient_id = ?", (PatientID,))
-                # emailfectch = cur.fetchone()
-
-                # print(emailfectch)
+                cur.execute("select * from patients where patient_id = ?", (realPatientID,))
+                mailfectch = cur.fetchone()
+                emailPatient = mailfectch["email_ID"]
+                print(emailPatient)
 
                 cur.execute("select * from users where user_name = ?", (username,))
                 emailfectchdoctor = cur.fetchone()
+                emailDoctor = emailfectchdoctor["email_address"]
+                print(emailDoctor)
 
 
-                # emailDoc = emailfectchdoctor["email_address"]
-                # email = emailfectch["email_ID"]
-                # Patientaname = session["PatientID"]
-                # Doctorsname = emailfectchdoctor["Full_Name"]
+                Patientaname = username
+                Doctorsname = emailfectchdoctor["Full_Name"]
 
-                # from_mail = "G6ChestRay@gmail.com"
-                # password_email = "kasdM29I1Io@ds!!@)(*uNSADS"
-                # smtp_server = "smtp.gmail.com"
-                # smtp_port = 587
+                from_mail = "G6ChestRay@gmail.com"
+                password_email = "bvon ibsu tiov fmfc"
+                smtp_server = "smtp.gmail.com"
+                smtp_port = 587
 
-                # message = EmailMessage()
-                # message["Subject"] = subject
-                # message["From"] = from_mail
-                # message["To"] = email
-                # message.set_content(body)
+                subject = f"Diagnostic - Confirmation - {Patientname}"
+
+                if Diagnosis == "yes":
+                    body = f"""
+Dear {Patientname},
+
+    We regret to inform you that a clinician has confirmed that you have pneumonia.
+Please do seek advice from your doctor {Doctorsname} at {emailDoctor}.
+
+Regards,
+    [G6] - Chesy Ray
+                    """
+                elif Diagnosis == "no":
+                    body = f"""
+Dear {Patientname},
+
+    We have confirmed by clinician than you do not have pneumonia. Yay!
+:D
+If you have any concerns please do reach out to {Doctorsname} at {emailDoctor}.
+
+Regards,
+    [G6] - Chesy Ray
+"""
+
+                message = EmailMessage()
+                message["Subject"] = subject
+                message["From"] = from_mail
+                message["To"] = emailPatient
+                message.set_content(body)
                 
                 # messageDoc = EmailMessage()
                 # messageDoc["Subject"] = subject
@@ -317,21 +348,22 @@ def create_app(test_config=None):
                 # messageDoc["To"] = emailDoc
                 # messageDoc.set_content(body)
 
-                # emailserver = smtplib.SMTP(smtp_server, smtp_port)
-                # emailserver.starttls()
-                # emailserver.login(from_mail, password_email)
+                emailserver = smtplib.SMTP(smtp_server, smtp_port)
+                emailserver.starttls()
+                emailserver.login(from_mail, password_email)
 
-                # emailserver.send_message(from_mail, email, message)
+                emailserver.send_message(message)
                 # emailserver.send_message(from_mail, emailDoc, messageDoc)
+                emailserver.quit()
 
 
                 if Diagnosis == "yes":
                     if xraysend:
-                        cur.execute("update chestrayimages set ai_generated_diagnosis = ? where patient_id = ?", (1, PatientID,)) #OverrideDiagnosis has
+                        cur.execute("update chestrayimages set ai_generated_diagnosis = ? where patient_id = ?", (1, realPatientID,)) #OverrideDiagnosis has
 
                 elif Diagnosis == "no":
                     if xraysend:
-                        cur.execute("update chestrayimages set ai_generated_diagnosis = ? where patient_id = ?", (0, PatientID,)) #OverrideDiagnosis has
+                        cur.execute("update chestrayimages set ai_generated_diagnosis = ? where patient_id = ?", (0, realPatientID,)) #OverrideDiagnosis has
 
                 return redirect("/ClinicianDashboard")
 
