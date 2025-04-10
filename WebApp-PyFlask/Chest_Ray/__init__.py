@@ -620,6 +620,83 @@ def create_app(test_config=None):
                 connection.close()
 
 
+
+
+
+
+    @app.route("/accountSettings")
+    def accountSettings():
+        if "username" in session and session["userType"] == "admin" and session["PatientID"] or "username" in session and session["userType"] == "director" and session["PatientID"]:
+            return render_template("accsettings.html")
+        else:
+            return redirect("/dashboard")
+
+
+    @app.route("/updateAcc", methods = ["POST"])
+    def updateAcc():
+        if "username" in session and session["userType"] == "admin" and session["PatientID"] or "username" in session and session["userType"] == "director" and session["PatientID"]:
+            try:
+                connection = sqlite3.connect("CHESTRAYG6.db")
+                connection.row_factory = sqlite3.Row
+                cur = connection.cursor()
+
+                username = session["PatientID"]
+
+
+                cur.execute("select * from patients where patient_name = ?", (username,))
+                Patientrow = cur.fetchone()
+
+                #keep old info incase no change
+                name = Patientrow["patient_name"]
+                email = Patientrow["email_ID"]
+                contact = Patientrow["phone_number"]
+                password = Patientrow["patient_password"]
+
+
+                firstname = request.form.get("first_name")
+                lastname = request.form.get("last_name")
+
+                if firstname and lastname:
+                    name = firstname + " " + lastname
+
+                if request.form.get("email"):
+                    email = request.form.get("email")
+
+                if request.form.get("contact"):
+                    contact = request.form.get("contact")
+                
+                checkpassword = request.form.get("password")
+
+                if password != checkpassword:
+                    print(password)
+                    print(checkpassword)
+                    return "Wrong password"
+
+                new_password = request.form.get("new_password") or password
+
+
+                cur.execute("""
+                    update patients
+                    set patient_name = ?, patient_password = ?, phone_number = ?, email_ID = ?
+                        where patient_name = ?
+                """,(name, new_password, contact, email, username))
+
+                redirect("/dashboard")
+
+            except Exception as error:
+                print(f"Error: {error}")
+
+
+            finally:
+                connection.commit()
+                connection.close()
+            
+
+            return redirect("/dashboard")
+        else:
+            return redirect("/dashboard")
+
+
     return app
 
 app = create_app()
