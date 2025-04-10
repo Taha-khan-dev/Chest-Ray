@@ -320,6 +320,8 @@ Dear {Patientname},
 
     We regret to inform you that a clinician has confirmed that you have pneumonia.
 Please do seek advice from your doctor {Doctorsname} at {emailDoctor}.
+Furtheremore your clinician has provied some information for you:
+{OverrideDescription}
 
 Regards,
     [G6] - Chesy Ray
@@ -331,6 +333,8 @@ Dear {Patientname},
     We have confirmed by clinician than you do not have pneumonia. Yay!
 :D
 If you have any concerns please do reach out to {Doctorsname} at {emailDoctor}.
+Furtheremore your clinician has provied some information for you:
+{OverrideDescription}
 
 Regards,
     [G6] - Chesy Ray
