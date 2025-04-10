@@ -1,11 +1,11 @@
 @font-face {
     font-family: "fibra one regular";
-    src: url(font/regular.otf);
+    src: url(../font/regular.otf);
 }
 
 @font-face {
     font-family: "fibra one bold";
-    src: url(font/bold.otf);
+    src: url(../font/bold.otf);
 }
 
 * {
