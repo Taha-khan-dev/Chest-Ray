@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - ChestRay G6</title>
+    <link rel="stylesheet" href="../static/stylesheets/Layout.css">
+    <link rel="shortcut icon" href="../static/favicon.ico">
+    <script src="../static/stylesheets/Redirectfunc.js"></script>
+</head>
+
+<body>
+    <div class="container" id="userTypePage">
+        <img src="../static/images/G6LOGOAB23.png" alt="ChestRay Logo" class="logo">
+        <h1>Welcome to Chest Ray</h1>
+        <p>Select your user type:</p>
+        <button onclick="goToLogin('admin')" class="login-btn">Admin</button>
+        <button onclick="goToLogin('patient')" class="login-btn">Patient</button>
+    </div>
+
+    <div class="hidden" id="loginPage">
+        <h2>Login</h2>
+        <form id="loginForm" action = "/check_login" method="POST" onsubmit="return validateForm();">
+
+            <input type = "hidden" id ="userType" name = "userType"> <!-- Added by Taha | to check if admin or patient-->
+            <input type="hidden" id="username" name="username">
+            <input type="hidden" id="password" name="password">
+
+            <div id="adminFields" class="hidden">
+                <label for="Adminusername">Username:</label>
+                <input type="text" id="Adminusername">
+                <br>
+                <label for="Adminpassword">Password:</label>
+                <input type="password" id="Adminpassword">
+                <button type="button" onclick="showHidePassword('Adminpassword')" class="show-pass-btn">Show</button><br>
+            </div>
+            
+
+            <div id="patientFields" class="hidden">
+                <label for="Patientusername">Username/UserID:</label>
+                <input type="text" id="Patientusername">
+                <br>
+                <label for="Patientpassword">Password:</label>
+                <input type="password" id="Patientpassword">
+                <button type="button" onclick="showHidePassword('Patientpassword')" class="show-pass-btn">Show</button><br>
+            </div>
+
+            <button type="submit">Login</button>
+
+        </form>
+
+        New User? <a href="/signup">Sign Up for free!</a>
+
+    </div>
+</body>
+</html>
+
+

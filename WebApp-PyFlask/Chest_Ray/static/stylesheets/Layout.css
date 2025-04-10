@@ -1,5 +1,5 @@
 body {
-    font-family: 'Fibra One';
+    font-family: 'Fibra One', sans-serif;
     background-color: #E5D8C8;
     color: black;
     text-align: center;
@@ -11,28 +11,39 @@ body {
     margin-top: 50px;
     padding: 15px;
     background-color: #D9C8B2;
-    border-radius: 8px;
+    border-radius: 12px;
     display: inline-block;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.info-box {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #D9C8B2;
+    border-radius: 12px;
+    display: inline-block;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: left;
 }
 
 .logo {
     width: 150px;
     margin-bottom: 20px;
-    border-radius: 8px;
+    border-radius: 12px;
 }
 
 button {
-    background-color: black;
-    color: white;
-    border: none;
+    background-color: #EAE3D2;
+    color: black;
+    border: 1px solid #DAD1BF;
     padding: 10px 20px;
-    margin: 10px;
     cursor: pointer;
-    border-radius: 4px;
+    border-radius: 12px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 button:hover {
-    background-color: #666;
+    background-color: #DAD1BF;
     transition: 0.2s;
 }
 
@@ -43,10 +54,31 @@ button:hover {
 input {
     margin: 8px;
     padding: 5px;
+    border: 1px solid #C9C1AF;
+    border-radius: 4px;
+    background-color: #F7F3EB;
+}
+
+.input-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
 }
 
 .show-pass-btn {
-    padding: 7.5px 12.5px;
+    padding: 5px 10px;
     font-size: 12px;
-    margin-left: 5px;
+    background-color: #EAE3D2;
+    border: 1px solid #DAD1BF;
+    cursor: pointer;
+    border-radius: 12px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.btn-group {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
 }

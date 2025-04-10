@@ -1,7 +1,10 @@
 import os
 import sqlite3
+import smtplib
 from datetime import date
 from flask import Flask, render_template, request, session, redirect
+from email.message import EmailMessage
+
 
 
 """
@@ -93,7 +96,7 @@ def create_app(test_config=None):
                 session["ID"] = id["user_id"]
 
                 #print("DONE")  #DEBUGGING
-                print(session)
+                #print(session)
 
                 return redirect("/ClinicianDashboard")
             
@@ -106,7 +109,7 @@ def create_app(test_config=None):
 
 
             else:
-                print(request.form)
+                #print(request.form)
                 return "Invaild Login"
 
         except Exception as error:
@@ -257,29 +260,78 @@ def create_app(test_config=None):
         PatientID = Patientrow["patient_id"]
 
 
-
         if "username" in session and session["userType"] == "clinician" and session["PatientID"]:
 
-
-
             try: 
+
+                PatientID = session["PatientID"]
+                username = session["username"]
+
+
+                #print(PatientID)
+                #print(username)
 
                 Diagnosis = request.form.get("Diagnosis")
                 OverrideDescription = request.form.get("OverrideDescription")
                     
-                cur.execute("update patients set reviewed = ? where patient_id = ?", ("Yes", PatientID))
-                cur.execute("update chestrayimages set Description = ? where patient_id = ?", (OverrideDescription, PatientID)) #OverrideDescription
+                cur.execute("update patients set reviewed = ? where patient_name = ?", ("Yes", PatientID,))
+
+
+                print(PatientID)
+
+                cur.execute("update chestrayimages set Description = ? where patient_id = ?", (OverrideDescription, PatientID,)) #OverrideDescription
 
                 cur.execute("select * from chestrayimages where patient_id = ?", (PatientID,))
                 xraysend = cur.fetchone()
 
+                # print(xraysend)
+
+                # cur.execute("select * from patients where patient_id = ?", (PatientID,))
+                # emailfectch = cur.fetchone()
+
+                # print(emailfectch)
+
+                cur.execute("select * from users where user_name = ?", (username,))
+                emailfectchdoctor = cur.fetchone()
+
+
+                # emailDoc = emailfectchdoctor["email_address"]
+                # email = emailfectch["email_ID"]
+                # Patientaname = session["PatientID"]
+                # Doctorsname = emailfectchdoctor["Full_Name"]
+
+                # from_mail = "G6ChestRay@gmail.com"
+                # password_email = "kasdM29I1Io@ds!!@)(*uNSADS"
+                # smtp_server = "smtp.gmail.com"
+                # smtp_port = 587
+
+                # message = EmailMessage()
+                # message["Subject"] = subject
+                # message["From"] = from_mail
+                # message["To"] = email
+                # message.set_content(body)
+                
+                # messageDoc = EmailMessage()
+                # messageDoc["Subject"] = subject
+                # messageDoc["From"] = from_mail
+                # messageDoc["To"] = emailDoc
+                # messageDoc.set_content(body)
+
+                # emailserver = smtplib.SMTP(smtp_server, smtp_port)
+                # emailserver.starttls()
+                # emailserver.login(from_mail, password_email)
+
+                # emailserver.send_message(from_mail, email, message)
+                # emailserver.send_message(from_mail, emailDoc, messageDoc)
+
+
                 if Diagnosis == "yes":
                     if xraysend:
-                        cur.execute("update chestrayimages set ai_generated_diagnosis = ? where patient_id = ?", (1, PatientID)) #OverrideDiagnosis has
+                        cur.execute("update chestrayimages set ai_generated_diagnosis = ? where patient_id = ?", (1, PatientID,)) #OverrideDiagnosis has
 
                 elif Diagnosis == "no":
                     if xraysend:
-                        cur.execute("update chestrayimages set ai_generated_diagnosis = ? where patient_id = ?", (0, PatientID)) #OverrideDiagnosis has
+                        cur.execute("update chestrayimages set ai_generated_diagnosis = ? where patient_id = ?", (0, PatientID,)) #OverrideDiagnosis has
 
                 return redirect("/ClinicianDashboard")
 
@@ -479,20 +531,12 @@ def create_app(test_config=None):
         """
 
 
-
-
         if "username" in session:
 
             try:
                 connection = sqlite3.connect("CHESTRAYG6.db")
                 connection.row_factory = sqlite3.Row
                 cur = connection.cursor()
-
-
-
-
-
-
 
                 if "username" in session and session["userType"] == "patient":
                     username = session["username"]

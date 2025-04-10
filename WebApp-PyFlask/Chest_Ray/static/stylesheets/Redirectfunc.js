@@ -7,6 +7,19 @@ function loginRedirect() {
 }
 
 
+function togglePassword(inputId) {
+    let passwordInput = document.getElementById(inputId);
+    let toggleBtn = passwordInput.nextElementSibling;
+    
+    if (passwordInput.type === "password") {
+        passwordInput.type = "text";
+        toggleBtn.innerHTML = "Hide";
+    } else {
+        passwordInput.type = "password";
+        toggleBtn.innerHTML = "Show";
+    }
+}
+
 let userType = '';
         let attempts = 0;
         
