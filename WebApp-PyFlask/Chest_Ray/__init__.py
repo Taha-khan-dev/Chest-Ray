@@ -100,7 +100,8 @@ def create_app(test_config=None):
             elif user and usertype == "patient":
                 session["username"] = user["patient_name"]
                 session["userType"] = usertype
-
+                #print(session["username"])
+                #print(session["userType"])
                 return redirect("dashboard")
 
 
@@ -134,38 +135,37 @@ def create_app(test_config=None):
                     Patientrow = cur.fetchone()
                     PatientID = Patientrow["patient_id"]
 
-                    getDocID = connection.cursor()
-                    getDocID.execute("select doctor_user_id from patients where patient_name = ?", (username,))
-
-                    docID = getDocID.fetchone()
+                    cur.execute("select doctor_user_id from patients where patient_name = ?", (username,))
+                    docID = cur.fetchone()
 
                     ID = docID["doctor_user_id"]
                     #for debugging
+                    #print(PatientID)
                     #print(username)
                     #print(ID)
 
                     if docID:
                         #Get the doc info if he has one (always should anyways) but still check :/
-                        secondcur = connection.cursor()
-                        secondcur.execute("select * from users where user_id = ?", (ID,))
-                        Doctorrow = secondcur.fetchone()
+                        cur.execute("select * from users where user_id = ?", (ID,))
+                        Doctorrow = cur.fetchone()
 
+                        cur.execute("select * from chestrayimages where patient_id = ?", (PatientID,))
+                        xraysend = cur.fetchone()
 
-
-                        getxray = connection.cursor()
-                        getxray.execute("select * from chestrayimages where patient_id = ?", (PatientID,))
-                        xraysend = getxray.fetchone()
-                        print(xraysend["ai_generated_diagnosis"])
-
-                        #checks because db coding is werid
                         if xraysend:
-                            boolSend = xraysend["ai_generated_diagnosis"]
-                        if boolSend == 1:
-                            boolSend = True
-                        elif boolSend == 0:
-                            boolSend = False
 
-                        return render_template("dashboard.html", Patientrow = Patientrow, Doctorrow = Doctorrow, xraysend = xraysend, boolSend = boolSend)
+                            print(xraysend["ai_generated_diagnosis"])
+
+                            #checks because db coding is werid
+                            if xraysend:
+                                boolSend = xraysend["ai_generated_diagnosis"]
+                            if boolSend == 1:
+                                boolSend = True
+                            elif boolSend == 0:
+                                boolSend = False
+
+                            return render_template("dashboard.html", Patientrow = Patientrow, Doctorrow = Doctorrow, xraysend = xraysend, boolSend = boolSend)
+                        return render_template("dashboard.html", Patientrow = Patientrow, Doctorrow = Doctorrow)
                     
                     else:
                         '''
@@ -193,31 +193,35 @@ def create_app(test_config=None):
                     Patientrow = cur.fetchone()
                     PatientID = Patientrow["patient_id"]
 
-                    secondcur = connection.cursor()
-                    secondcur.execute("select * from users where user_id = ?", (doctorID,))
-                    Doctorrow = secondcur.fetchone()
+                    cur.execute("select * from users where user_id = ?", (doctorID,))
+                    Doctorrow = cur.fetchone()
+
+                    #print(doctorID)
+                    #print(PatientID)
+
+                    cur.execute("select * from chestrayimages where patient_id = ?", (PatientID,))
+                    xraysend = cur.fetchone()
 
 
-                    getxray = connection.cursor()
-                    getxray.execute("select * from chestrayimages where patient_id = ?", (PatientID,))
-                    xraysend = getxray.fetchone()
-                    print(xraysend["ai_generated_diagnosis"])
-
-                    #checks because db coding is werid
                     if xraysend:
-                        boolSend = xraysend["ai_generated_diagnosis"]
-                    if boolSend == 1:
-                        boolSend = True
-                    elif boolSend == 0:
-                        boolSend = False
+                        #checks because db coding is werid
+                        #print(xraysend["ai_generated_diagnosis"])
 
-                    
-                    if session["userType"] == "clinician":
-                        clinician = "True"
-                    else:
-                        clinician = "False"
+                        if xraysend:
+                            boolSend = xraysend["ai_generated_diagnosis"]
+                        if boolSend == 1:
+                            boolSend = True
+                        elif boolSend == 0:
+                            boolSend = False
 
-                    return render_template("dashboard.html", Patientrow = Patientrow, Doctorrow = Doctorrow, xraysend = xraysend, boolSend = boolSend, clinician = clinician)             
+                        
+                        if session["userType"] == "clinician":
+                            clinician = "True"
+                        else:
+                            clinician = "False"
+
+                        return render_template("dashboard.html", Patientrow = Patientrow, Doctorrow = Doctorrow, xraysend = xraysend, boolSend = boolSend, clinician = clinician)             
+                    return render_template("dashboard.html", Patientrow = Patientrow, Doctorrow = Doctorrow)
 
                 else:
                     return redirect("/ClinicianDashboard")
@@ -242,39 +246,40 @@ def create_app(test_config=None):
     @app.route("/reviewed", methods = ['POST'])
     def reviewed():
 
+        connection = sqlite3.connect("CHESTRAYG6.db")
+        connection.row_factory = sqlite3.Row
+
+
+        username = session["PatientID"]
+        cur = connection.cursor()
+        cur.execute("select * from patients where patient_name = ?", (username,))
+        Patientrow = cur.fetchone()
+        PatientID = Patientrow["patient_id"]
+
+
+
         if "username" in session and session["userType"] == "clinician" and session["PatientID"]:
 
 
 
             try: 
-                connection = sqlite3.connect("CHESTRAYG6.db")
-                connection.row_factory = sqlite3.Row
-                cur = connection.cursor()
 
                 Diagnosis = request.form.get("Diagnosis")
-                #OverrideDescription = request.form.get("OverrideDescription")
-
-                username = session["PatientID"]
-                cur.execute("select * from patients where patient_name = ?", (username,))
-                Patientrow = cur.fetchone()
-                PatientID = Patientrow["patient_id"]
+                OverrideDescription = request.form.get("OverrideDescription")
                     
-                secondcur = connection.cursor()
-                secondcur.execute("update patients set reviewed = ? where patient_id = ?", ("Yes", PatientID))
+                cur.execute("update patients set reviewed = ? where patient_id = ?", ("Yes", PatientID))
+                cur.execute("update chestrayimages set Description = ? where patient_id = ?", (OverrideDescription, PatientID)) #OverrideDescription
 
-                getxray = connection.cursor()
-                getxray.execute("select * from chestrayimages where patient_id = ?", (PatientID,))
-                xraysend = getxray.fetchone()
+                cur.execute("select * from chestrayimages where patient_id = ?", (PatientID,))
+                xraysend = cur.fetchone()
 
                 if Diagnosis == "yes":
                     if xraysend:
-                        xraysend["ai_generated_diagnosis"] = 1 #OverrideDiagnosis has
-                        #xraysend["Description"] = OverrideDescription
+                        cur.execute("update chestrayimages set ai_generated_diagnosis = ? where patient_id = ?", (1, PatientID)) #OverrideDiagnosis has
 
                 elif Diagnosis == "no":
                     if xraysend:
-                        xraysend["ai_generated_diagnosis"] = 0 #OverrideDiagnosis has
-                        #xraysend["Description"] = OverrideDescription
+                        cur.execute("update chestrayimages set ai_generated_diagnosis = ? where patient_id = ?", (0, PatientID)) #OverrideDiagnosis has
 
                 return redirect("/ClinicianDashboard")
 
@@ -282,9 +287,10 @@ def create_app(test_config=None):
                 print(f"Error: {error}")
 
             finally:
+                connection.commit()
                 connection.close()
         
-        return "Went wrong"
+        return "Did not choose diagnosis"
 
 
     @app.route("/PatientSelected", methods = ['POST'])
@@ -345,9 +351,10 @@ def create_app(test_config=None):
                             gender,
                             medical_history,
                             phone_number,
-                            doctor_user_id
-                            ) VALUES (?, ?, ?, ? , ?, ?, ?)
-                    """, (name, password, dob, gender, "", tel, Id)
+                            doctor_user_id,
+                            email_ID
+                            ) VALUES (?, ?, ?, ? , ?, ?, ?, ?)
+                    """, (name, password, dob, gender, "", tel, Id, email)
                             )
 
                 connection.commit()
@@ -493,11 +500,8 @@ def create_app(test_config=None):
                     cur.execute("select * from patients where patient_name = ?", (username,)) #bro
                     Patientrow = cur.fetchone()
 
-
-                    getDocID = connection.cursor()
-                    getDocID.execute("select doctor_user_id from patients where patient_name = ?", (username,))
-
-                    docID = getDocID.fetchone()
+                    cur.execute("select doctor_user_id from patients where patient_name = ?", (username,))
+                    docID = cur.fetchone()
 
                     ID = docID["doctor_user_id"]
                     #for debugging
@@ -506,9 +510,8 @@ def create_app(test_config=None):
 
                     if docID:
                         #Get the doc info if he has one (always should anyways) but still check :/
-                        secondcur = connection.cursor()
-                        secondcur.execute("select * from users where user_id = ?", (ID,))
-                        Doctorrow = secondcur.fetchone()
+                        cur.execute("select * from users where user_id = ?", (ID,))
+                        Doctorrow = cur.fetchone()
                         return render_template("dashboard.html", Patientrow = Patientrow, Doctorrow = Doctorrow)
                     
                     else:
@@ -536,22 +539,18 @@ def create_app(test_config=None):
                     cur.execute("select * from patients where patient_name = ?", (username,))
                     Patientrow = cur.fetchone()
 
-                    secondcur = connection.cursor()
-                    secondcur.execute("select * from users where user_id = ?", (doctorID,))
-                    Doctorrow = secondcur.fetchone()
+                    cur.execute("select * from users where user_id = ?", (doctorID,))
+                    Doctorrow = cur.fetchone()
 
-
-                    idForPatient = connection.cursor()
-                    idForPatient.execute("select patient_id from patients where patient_name = ?", (username,))
-                    idForPat = idForPatient.fetchone()
+                    cur.execute("select patient_id from patients where patient_name = ?", (username,))
+                    idForPat = cur.fetchone()
                     realID = idForPat["patient_id"]
 
                     #save xray to db :{
 
                     thedate = date.today()
 
-                    newcur = connection.cursor()
-                    newcur.execute("""
+                    cur.execute("""
                     insert into chestrayimages (patient_id, user_id, FILE_PATH, upload_date, ai_generated_diagnosis, Description)
                     values (?, ?, ?, ?, ?, ?)
                     """, (realID, doctorID, filename, thedate, Pneumonia, ""))
