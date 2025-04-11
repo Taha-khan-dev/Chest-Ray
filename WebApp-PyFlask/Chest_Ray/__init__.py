@@ -78,7 +78,7 @@ def create_app(test_config=None):
             elif usertype == "patient":
                 cur.execute("SELECT * FROM patients WHERE patient_name = ? AND patient_password = ?;", (username, password))
             else:
-                return "404" #Make better
+                return redirect("/error")
 
             user = cur.fetchone()
 
@@ -110,11 +110,11 @@ def create_app(test_config=None):
 
             else:
                 #print(request.form)
-                return "Invaild Login"
+                return redirect("/wronginfo")
 
         except Exception as error:
             print(f"Error: {error}")
-            return "404, can not reach database :C"
+            return redirect("/error")
         
 
         finally:
@@ -234,7 +234,7 @@ def create_app(test_config=None):
                 print(f"Error: {error}")
 
                 if "username" in session and session["userType"] == "patient":
-                    return "404, can not reach database :C"
+                    return redirect("/error")
                 elif "username" in session and session["userType"] == "admin" or "username" in session and session["userType"] == "director" or "username" in session and session["userType"] == "clinician":
                     print("Did not select patient")
                     return redirect("/ClinicianDashboard")
@@ -373,6 +373,7 @@ Regards,
 
             except Exception as error:
                 print(f"Error: {error}")
+                return redirect("/error")
 
             finally:
                 connection.commit()
@@ -453,7 +454,7 @@ Regards,
 
         except Exception as error:
             print(f"Error: {error}")
-            return "404, can not reach database :C"
+            return redirect("/error")
         
         finally:
             connection.close()
@@ -490,7 +491,7 @@ Regards,
 
         except Exception as error:
             print(f"Error: {error}")
-            return "404, can not reach database :C"
+            return redirect("/error")
         
 
         finally:
@@ -508,8 +509,6 @@ Regards,
 
     @app.route("/xrayAI", methods = ["POST"])
     def xrayAI():
-        import os
-
         if "xray" not in request.files:
             return redirect("/dashboard")
 
@@ -530,7 +529,9 @@ Regards,
         path = os.path.join("Chest_Ray/static/uploads", filename)
         file.save(path)
 
-        model = keras.models.load_model("model.keras")
+        from tensorflow.keras.layers import LeakyReLU
+
+        model = keras.models.load_model("model.keras", custom_objects={'LeakyReLU': LeakyReLU})
 
         #img = Image.open(path)
 
@@ -647,17 +648,13 @@ Regards,
                 print(f"Error: {error}")
 
                 if "username" in session and session["userType"] == "patient":
-                    return "404, can not reach database :C"
+                    return redirect("/error")
                 elif "username" in session and session["userType"] == "admin" or "username" in session and session["userType"] == "director" or "username" in session and session["userType"] == "clinician":
                     print("Did not select patient")
                     return redirect("/ClinicianDashboard")
 
             finally:
                 connection.close()
-
-
-
-
 
 
     @app.route("/accountSettings")
@@ -721,6 +718,7 @@ Regards,
 
             except Exception as error:
                 print(f"Error: {error}")
+                return redirect("/error")
 
 
             finally:
@@ -732,6 +730,14 @@ Regards,
         else:
             return redirect("/dashboard")
 
+
+    @app.route("/error")
+    def error():
+        return render_template("error.html")
+
+    @app.route("/wronginfo")
+    def wronginfo():
+        return render_template("wronginfo.html")
 
     return app
 

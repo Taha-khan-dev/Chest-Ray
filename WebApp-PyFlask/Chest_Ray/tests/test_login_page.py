@@ -36,7 +36,8 @@ def test_doctor_login_fail(client):
         "userType": "admin"
     }, follow_redirects=False)
 
-    assert "Invaild Login" in response.text
+    assert response.status_code == 302
+    assert "wronginfo" in response.headers["Location"]
 
 def test_patient_login_fail(client):
     response = client.post("/check_login", data ={
@@ -45,7 +46,8 @@ def test_patient_login_fail(client):
         "userType": "patient"
     }, follow_redirects=False)
 
-    assert "Invaild Login" in response.text
+    assert response.status_code == 302
+    assert "wronginfo" in response.headers["Location"]
 
 
 
