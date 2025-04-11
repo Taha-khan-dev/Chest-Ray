@@ -314,6 +314,7 @@ def create_app(test_config=None):
 
                 subject = f"Diagnostic - Confirmation - {Patientname}"
 
+
                 if Diagnosis == "yes":
                     body = f"""
 Dear {Patientname},
@@ -357,6 +358,7 @@ Regards,
                 emailserver.login(from_mail, password_email)
 
                 emailserver.send_message(message)
+                print(emailserver)
                 # emailserver.send_message(from_mail, emailDoc, messageDoc)
                 emailserver.quit()
 
@@ -652,6 +654,8 @@ Regards,
                 elif "username" in session and session["userType"] == "admin" or "username" in session and session["userType"] == "director" or "username" in session and session["userType"] == "clinician":
                     print("Did not select patient")
                     return redirect("/ClinicianDashboard")
+                else:
+                    return redirect("/error")
 
             finally:
                 connection.close()
@@ -734,6 +738,10 @@ Regards,
     @app.route("/error")
     def error():
         return render_template("error.html")
+    
+    @app.route("/autoerror")
+    def autoerror():
+        return render_template("autoerror.html")
 
     @app.route("/wronginfo")
     def wronginfo():

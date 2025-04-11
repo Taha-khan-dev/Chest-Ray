@@ -68,19 +68,9 @@
                 <div class="file">
                     <img src = "">
                     <br>
-                    file.doc
-                </div>
-                
-                <div class="file">
-                    <img src = "">
-                    <br>
-                    file.doc
-                </div>
-                
-                <div class="file">
-                    <img src = "">
-                    <br>
-                    file.doc
+                    {% if xraysend %}
+                    {{ xraysend.Description }}
+                    {% endif %}
                 </div>
             </div>
 
