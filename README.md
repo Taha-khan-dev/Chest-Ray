@@ -13,12 +13,12 @@ Refer to trello for detail.
 ## To run Flask
 Refer to Flask Documentation to download Flask.
 
-Please be inside the folder *Chest-Ray\WebApp-PyFlask*. You can use the following command in terminal *'cd Chest-Ray\WebApp-PyFlask'*,
-Please be insidde 'WebApp-PyFlask', to run the test and the app.
+Please be inside the folder *Chest-Ray\WebApp-PyFlask*. | You can do it by the following command in terminal *'cd Chest-Ray\WebApp-PyFlask'*,
+To rest and run the app you will also need to be inside 'WebApp-PyFlask'.
 
 And then type the following command in terminal *'flask --app Chest_Ray --debug run'* to run the web app.
 
-Details for login:
+Details for login for testing:
 
     Name: abdullah_malik
     passwrd: password123
