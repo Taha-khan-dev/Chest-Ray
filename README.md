@@ -2,7 +2,7 @@
 
 **Group:** G6
 
-**Module:** Data Science Development Exercise
+**Module:** Data Science Development Exercise (2025, Sem B)
 
 **Project Name:** Chest Ray
 
